@@ -1,5 +1,12 @@
 {
   "name": "hal-outliner",
+  "displayName": "HelloCordova",
+  "main": "index.js",
+  "keywords": [
+      "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
   "version": "0.1.0",
   "private": true,
   "scripts": {
