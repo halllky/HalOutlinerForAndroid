@@ -4,6 +4,13 @@ enum E_MemoType {
   Image,
 }
 
+enum E_MemoState {
+  None,
+  Todo,
+  Cancel,
+}
+
 export {
   E_MemoType,
+  E_MemoState,
 };
