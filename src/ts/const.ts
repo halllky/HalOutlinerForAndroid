@@ -1,3 +1,5 @@
+const DBName = 'HalOutliner';
+
 enum E_MemoType {
   Text,
   Url,
@@ -11,6 +13,7 @@ enum E_MemoState {
 }
 
 export {
+  DBName,
   E_MemoType,
   E_MemoState,
 };

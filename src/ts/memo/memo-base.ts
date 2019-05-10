@@ -1,4 +1,4 @@
-import { E_MemoType, E_MemoState } from '../enums';
+import { E_MemoType, E_MemoState } from '../const';
 import { TextMemo, UrlMemo } from '.';
 
 export default abstract class MemoBase {
@@ -9,6 +9,7 @@ export default abstract class MemoBase {
     }
   }
 
+  public id?: number;
   public value: string = '';
   public type: E_MemoType = E_MemoType.Text;
   public state: E_MemoState = E_MemoState.None;
