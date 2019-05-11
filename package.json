@@ -13,7 +13,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "typescript ./src/test.ts"
+    "android": "npm run build && cordova run android"
   },
   "dependencies": {
     "dexie": "^2.0.4",
