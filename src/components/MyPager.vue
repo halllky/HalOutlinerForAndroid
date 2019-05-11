@@ -1,9 +1,8 @@
 <template>
   <div>
     <div>
-      <span @click="pageIndex--">prev</span>
-      ＜＜　＞＞
-      <span @click="pageIndex++">next</span>
+      <input type="button" @click="pageIndex--" value="prev" class="btn">
+      <input type="button" @click="pageIndex++" value="next" class="btn">
     </div>
     {{ (firstDataIndex + 1) + ' 〜 ' + (lastDataIndex + 1) + ' / ' + allDataCount }}
   </div>

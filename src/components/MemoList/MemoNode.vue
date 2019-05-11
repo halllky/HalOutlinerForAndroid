@@ -1,12 +1,15 @@
 <template>
-  <li class="memo">
-    <StretchableTextarea
-      ref="textarea"
-      v-model="model.value"
-      class="memo__value"
-      @blur="deleteIfEmpty"
-    ></StretchableTextarea>
-    <a @click="addChild">+</a>
+  <li class="memo" :class="{'memo_root': model.getRoot() === model}">
+    <div class="memo__body" :class="{'memo__body_root': model.getRoot() === model}">
+      <StretchableTextarea
+        ref="textarea"
+        v-model="model.value"
+        class="memo__body__text"
+        :style="{'font-size': $store.state.fontSize + 'px'}"
+        @blur="deleteIfEmpty"
+      ></StretchableTextarea>
+      <input type="button" value="+" @click="addChild" class="memo__body__add">
+    </div>
     <ul class="memo__children">
       <MemoNode
         ref="child"
@@ -53,3 +56,35 @@ export default class MemoNode extends Vue {
   @Watch('model.children.length') private onChildChanged() { this.save(); }
 }
 </script>
+
+<style lang="scss">
+.memo{
+  background-color: $c_main;
+  &_root{
+    padding: 1px;
+  }
+  &__body{
+    display: flex;
+    background-color: $c_base;
+    border-radius: 2px;
+    &_root{
+      position: sticky;
+      top: 0;
+    }
+    &__text{
+      outline: none;
+      border: none;
+      flex: 1;
+    }
+    &__add{
+      @include btn-base();
+    }
+  }
+  &__children{
+    padding-left: 1em;
+    & > li{
+      margin-top: 1px;
+    }
+  }
+}
+</style>

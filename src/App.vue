@@ -1,13 +1,17 @@
 <template>
-  <div id="app">
-    <MemoList
-      :model="shownMemos"
-    ></MemoList>
-    <MyPager
-      v-model="pageIndex"
-      :pageSize="$store.state.pageSize"
-      :allDataCount="allDataCount"
-    ></MyPager>
+  <div id="app" class="app">
+    <div class="app__body">
+      <MemoList
+        :model="shownMemos"
+      ></MemoList>
+    </div>
+    <div class="app__footer">
+      <MyPager
+        v-model="pageIndex"
+        :pageSize="$store.state.pageSize"
+        :allDataCount="allDataCount"
+      ></MyPager>
+    </div>
   </div>
 </template>
 
@@ -49,4 +53,13 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
+.app{
+  display: flex;
+  flex-direction: column;
+  &__body{
+    flex: 1;
+    overflow-y: scroll;
+    padding-right: 1em;
+  }
+}
 </style>

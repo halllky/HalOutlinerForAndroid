@@ -2,6 +2,7 @@
   <textarea
     v-model="_value"
     spellcheck="false"
+    class="str-text"
     @blur="blur"
   ></textarea>
 </template>
@@ -27,3 +28,10 @@ export default class StretchableTextarea extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.str-text{
+  resize: none;
+  overflow: hidden;
+}
+</style>

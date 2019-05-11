@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul>
+    <ul class="memo-list">
       <MemoNode
         ref="memo"
         v-for="(memo, index) in model" :key="index"
@@ -9,7 +9,7 @@
       ></MemoNode>
     </ul>
     <div>
-      <span @click="addMemo">new</span>
+      <input type="button" @click="addMemo" value="new" class="btn">
     </div>
   </div>
 </template>
@@ -41,3 +41,11 @@ export default class MemoList extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.memo-list{
+  & > li:not(:first-child){
+    margin-top: 1px;
+  }
+}
+</style>
