@@ -1,0 +1,36 @@
+$c_base: rgb(255, 253, 246);
+$c_main: rgb(255, 237, 213);
+$c_accent: rgb(238, 181, 155);
+
+
+*{
+  box-sizing: border-box;
+}
+html,body{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: $c_base;
+}
+ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+@mixin btn-base($bg-color: $c_accent, $font-color: $c_base){
+  display: inline-flex;
+  outline: none;
+  border: none;
+  border-radius: 3px;
+  background-color: $bg-color;
+  color: $font-color;
+  &:active{
+    transform: translateY(1px);
+  }
+}
+.btn{
+  @include btn-base();
+}
