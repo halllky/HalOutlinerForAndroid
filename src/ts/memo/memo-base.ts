@@ -14,6 +14,7 @@ export default abstract class MemoBase {
   public type: E_MemoType = E_MemoType.Text;
   public state: E_MemoState = E_MemoState.None;
   public createdTimeTick: number = Date.now();
+  public parent: MemoBase | null = null;
   public children: MemoBase[] = [];
 
   public get createdTime(): Date { return new Date(this.createdTimeTick); }
@@ -26,5 +27,19 @@ export default abstract class MemoBase {
       this.children = [];
       init.children.forEach((c) => this.children.push(MemoBase.create(c.type, c)));
     }
+  }
+
+  public getRoot(): MemoBase {
+    let m: MemoBase = this;
+    while (m.parent !== null) { m = m.parent; }
+    return m;
+  }
+  public addChild(child: MemoBase) {
+    child.parent = this;
+    this.children.push(child);
+  }
+  public removeChild(child: MemoBase) {
+    child.parent = null;
+    this.children = this.children.filter((c) => c !== child);
   }
 }
