@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { MemoBase } from '@/ts/memo';
-import { E_MemoType, DBName } from '@/ts/const';
+import { E_MemoType, DBNameForTest } from '@/ts/const';
 import DB from './ts/db';
 
 // テストに通らなかった場合、VSCodeではデバッグコンソールに Assertion Error が出力されます。
@@ -30,10 +30,13 @@ import DB from './ts/db';
   m2.value = 'bbb';
   const m3 = MemoBase.create(E_MemoType.Text);
   m3.value = 'ccc';
-  DB.clear().then(() => {
-    return DB.save(m1);
+
+  const testDb = new DB(DBNameForTest);
+
+  testDb.clear().then(() => {
+    return testDb.save(m1);
   }).then((insertedKey) => {
-    return DB.loadById(insertedKey);
+    return testDb.loadById(insertedKey);
   }).then((response) => {
     assert.notEqual(response, undefined, 'test2-1');
     if (response) {
@@ -41,15 +44,15 @@ import DB from './ts/db';
       assert.notEqual(restored.children[0].createdTime, undefined, 'test2-2');
     }
   }).then(() => {
-    return DB.save(m2);
+    return testDb.save(m2);
   }).then(() => {
-    return DB.save(m3);
+    return testDb.save(m3);
   }).then(() => {
-    return DB.load({offset: 1});
+    return testDb.load({offset: 1});
   }).then((result) => {
     assert.equal(result.length, 1, 'test2-3');
     assert.equal(result[0].value, 'bbb', 'test2-4');
   }).then(() => {
-    DB.clear();
+    testDb.exterminateDatabase();
   });
 }

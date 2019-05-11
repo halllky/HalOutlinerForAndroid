@@ -1,4 +1,5 @@
 const DBName = 'HalOutliner';
+const DBNameForTest = 'HalOutlinerTest';
 
 enum E_MemoType {
   Text,
@@ -14,6 +15,7 @@ enum E_MemoState {
 
 export {
   DBName,
+  DBNameForTest,
   E_MemoType,
   E_MemoState,
 };
