@@ -24,5 +24,8 @@ export default class DB {
   public static async load(id: number): Promise<MemoBase | undefined> {
     return this.db.Memos.get(id);
   }
+  public static async delete(id: number): Promise<void> {
+    return this.db.Memos.delete(id);
+  }
   private static db: DBInstance = new DBInstance();
 }

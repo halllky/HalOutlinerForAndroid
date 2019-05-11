@@ -33,6 +33,7 @@ import DB from './ts/db';
     if (response) {
       const restored = MemoBase.create(response.type, response);
       assert.notEqual(restored.children[0].createdTime, undefined, 'test2-2');
+      if (response.id !== undefined) { DB.delete(response.id); }
     }
   });
 }
