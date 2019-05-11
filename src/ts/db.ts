@@ -18,10 +18,6 @@ class DBInstance extends Dexie {
 
 // tslint:disable-next-line: max-classes-per-file
 export default class DB {
-  public static recreate(): void {
-    this.db.delete();
-    this.db = new DBInstance();
-  }
   public static async save(memo: MemoBase): Promise<number> {
     return this.db.Memos.put(memo, memo.id);
   }

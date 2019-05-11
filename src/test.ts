@@ -26,7 +26,6 @@ import DB from './ts/db';
   const par = MemoBase.create(E_MemoType.Text);
   par.children.push(chi);
 
-  DB.recreate();
   DB.save(par).then((insertedKey) => {
     return DB.load(insertedKey);
   }).then((response) => {
