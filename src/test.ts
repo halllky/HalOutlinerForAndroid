@@ -21,19 +21,35 @@ import DB from './ts/db';
 
 // 2. db
 {
-  const chi = MemoBase.create(E_MemoType.Text);
-  chi.value = '1';
-  const par = MemoBase.create(E_MemoType.Text);
-  par.children.push(chi);
-
-  DB.save(par).then((insertedKey) => {
-    return DB.load(insertedKey);
+  const m1 = MemoBase.create(E_MemoType.Text);
+  m1.value = 'aaa';
+  const m1child = MemoBase.create(E_MemoType.Text);
+  m1child.value = 'aaa_child';
+  m1.addChild(m1child);
+  const m2 = MemoBase.create(E_MemoType.Text);
+  m2.value = 'bbb';
+  const m3 = MemoBase.create(E_MemoType.Text);
+  m3.value = 'ccc';
+  DB.clear().then(() => {
+    return DB.save(m1);
+  }).then((insertedKey) => {
+    return DB.loadById(insertedKey);
   }).then((response) => {
     assert.notEqual(response, undefined, 'test2-1');
     if (response) {
       const restored = MemoBase.create(response.type, response);
       assert.notEqual(restored.children[0].createdTime, undefined, 'test2-2');
-      if (response.id !== undefined) { DB.delete(response.id); }
     }
+  }).then(() => {
+    return DB.save(m2);
+  }).then(() => {
+    return DB.save(m3);
+  }).then(() => {
+    return DB.load({offset: 1});
+  }).then((result) => {
+    assert.equal(result.length, 1, 'test2-3');
+    assert.equal(result[0].value, 'bbb', 'test2-4');
+  }).then(() => {
+    DB.clear();
   });
 }
