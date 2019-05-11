@@ -27,8 +27,8 @@ import DB from './ts/db';
   par.children.push(chi);
 
   DB.recreate();
-  DB.instance.Memos.put(par).then((insertedKey) => {
-    return DB.instance.Memos.get(insertedKey);
+  DB.save(par).then((insertedKey) => {
+    return DB.load(insertedKey);
   }).then((response) => {
     assert.notEqual(response, undefined, 'test2-1');
     if (response) {

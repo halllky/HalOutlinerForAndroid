@@ -22,6 +22,11 @@ export default class DB {
     this.db.delete();
     this.db = new DBInstance();
   }
+  public static async save(memo: MemoBase): Promise<number> {
+    return this.db.Memos.put(memo, memo.id);
+  }
+  public static async load(id: number): Promise<MemoBase | undefined> {
+    return this.db.Memos.get(id);
+  }
   private static db: DBInstance = new DBInstance();
-  public static get instance(): DBInstance { return this.db; }
 }
