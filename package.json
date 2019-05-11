@@ -12,9 +12,11 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "android": "npm run build && cordova run android"
   },
   "dependencies": {
+    "dexie": "^2.0.4",
     "cordova-android": "^8.0.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
@@ -22,8 +24,10 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@types/assert": "^1.4.2",
     "@vue/cli-plugin-typescript": "^3.7.0",
     "@vue/cli-service": "^3.7.0",
+    "assert": "^1.5.0",
     "cordova-plugin-whitelist": "^1.3.3",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
