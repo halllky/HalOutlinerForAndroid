@@ -22,6 +22,7 @@ ul{
 }
 @mixin btn-base($bg-color: $c_accent, $font-color: $c_base){
   display: inline-flex;
+  justify-content: center;
   outline: none;
   border: none;
   border-radius: 3px;

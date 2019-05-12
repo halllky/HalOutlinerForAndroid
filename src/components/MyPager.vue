@@ -1,10 +1,12 @@
 <template>
-  <div>
-    <div>
-      <input type="button" @click="pageIndex--" value="prev" class="btn">
-      <input type="button" @click="pageIndex++" value="next" class="btn">
+  <div class="pager">
+    <div class="pager__buttons">
+      <input type="button" @click="pageIndex--" value="prev" class="pager__buttons__btn">
+      <input type="button" @click="pageIndex++" value="next" class="pager__buttons__btn">
     </div>
-    {{ (firstDataIndex + 1) + ' 〜 ' + (lastDataIndex + 1) + ' / ' + allDataCount }}
+    <div class="pager__count">
+      {{ (firstDataIndex + 1) + ' 〜 ' + (lastDataIndex + 1) + ' / ' + allDataCount }}
+    </div>
   </div>
 </template>
 
@@ -30,3 +32,23 @@ export default class MyPager extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.pager{
+  &__buttons{
+    display: flex;
+    justify-content: space-around;
+    &__btn{
+      @include btn-base();
+      flex: 1;
+      &:not(:first-child){
+        margin-left: 1em;
+      }
+    }
+  }
+  &__count{
+    font-size: 11px;
+    text-align: center;
+  }
+}
+</style>
