@@ -7,6 +7,7 @@
         :allDataCount="allDataCount"
       ></MyPager>
       <MemoList
+        ref="memoList"
         :model="shownMemos"
       ></MemoList>
       <MyPager
@@ -16,6 +17,7 @@
       ></MyPager>
     </div>
     <div class="app__footer">
+      <input type="button" value="collapse" @click="collapse" class="btn">
     </div>
   </div>
 </template>
@@ -37,8 +39,14 @@ import DB from './ts/db';
 export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
   public pageIndex = 0;
+  private isCollapsed = true;
   public get pageSize() { return (this.$store.state.pageSize as number); }
   public get allDataCount() { return (this.$store.state.db as DB).dataCount; }
+
+  private collapse() {
+    (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
+    this.isCollapsed = !this.isCollapsed;
+  }
 
   @Watch('pageIndex')
   private onPageChanged() {
@@ -66,6 +74,10 @@ export default class App extends Vue {
     flex: 1;
     overflow-y: scroll;
     padding-right: 1em;
+  }
+  &__footer{
+    display: flex;
+    justify-content: space-around;
   }
 }
 </style>

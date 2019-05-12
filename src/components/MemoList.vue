@@ -3,7 +3,7 @@
     <ul class="memo-list">
       <MemoNode
         ref="memo"
-        v-for="(memo, index) in model" :key="index"
+        v-for="(memo, index) in model" :key="memo.id || 'new' + index"
         :model="memo"
         @deleted="removeMemo(memo)"
       ></MemoNode>
@@ -29,6 +29,9 @@ import DB from '../ts/db';
 export default class MemoList extends Vue {
   @Prop() public model!: MemoBase[];
 
+  public setCollapse(collapse: boolean) {
+    (this.$refs.memo as Vue[]).forEach((m) => (m as MemoNode).setCollapse(collapse));
+  }
   public addMemo() {
     this.model.push(MemoBase.create(E_MemoType.Text));
     this.$nextTick(() => {
