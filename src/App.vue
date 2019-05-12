@@ -17,8 +17,8 @@
       ></MyPager>
     </div>
     <div class="app__footer">
-      <input type="button" value="collapse" @click="collapse" class="btn">
-      <input type="button" value="new memo" @click="addRootMemo" class="btn">
+      <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
+      <input type="button" value="collapse" @click="collapse" class="app__footer__btn">
     </div>
   </div>
 </template>
@@ -97,6 +97,14 @@ export default class App extends Vue {
   &__footer{
     display: flex;
     justify-content: space-around;
+    & :not(:first-child){
+      margin-left: 4px;
+    }
+    &__btn{
+      @include btn-base();
+      flex: 1;
+      height: 24px;
+    }
   }
 }
 </style>
