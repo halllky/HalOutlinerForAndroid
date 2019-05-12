@@ -18,6 +18,7 @@
     </div>
     <div class="app__footer">
       <input type="button" value="collapse" @click="collapse" class="btn">
+      <input type="button" value="new memo" @click="addRootMemo" class="btn">
     </div>
   </div>
 </template>
@@ -29,6 +30,7 @@ import MyPager from '@/components/MyPager.vue';
 import { TextMemo, MemoBase } from './ts/memo';
 import { E_MemoType } from './ts/const';
 import DB from './ts/db';
+import MemoNode from './components/MemoList/MemoNode.vue';
 
 @Component({
   components: {
@@ -40,9 +42,26 @@ export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
   public pageIndex = 0;
   private isCollapsed = true;
+  private stopPageIndexWatching = false;
   public get pageSize() { return (this.$store.state.pageSize as number); }
   public get allDataCount() { return (this.$store.state.db as DB).dataCount; }
 
+  private addRootMemo() {
+    const newMemo = MemoBase.create(E_MemoType.Text);
+    if (this.shownMemos.length >= this.$store.state.pageSize) {
+      // move to new page
+      this.shownMemos = [newMemo];
+      this.pageIndex = (this.allDataCount === 0 ? 0 : Math.ceil(this.allDataCount / this.pageSize));
+      this.stopPageIndexWatching = true;
+    } else {
+      // add to bottom of list
+      this.shownMemos.push(newMemo);
+    }
+    this.$nextTick(() => {
+      // bad practice.
+      (((this.$refs.memoList as MemoList).$refs.memo as Vue[])[this.shownMemos.length - 1] as MemoNode).focus();
+    });
+  }
   private collapse() {
     (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
     this.isCollapsed = !this.isCollapsed;
@@ -50,6 +69,11 @@ export default class App extends Vue {
 
   @Watch('pageIndex')
   private onPageChanged() {
+    // bad practice.
+    if (this.stopPageIndexWatching) {
+      this.stopPageIndexWatching = false;
+      return;
+    }
     (this.$store.state.db as DB).load({
       limit: this.pageSize,
       offset: this.pageIndex * this.pageSize,
