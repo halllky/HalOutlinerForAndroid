@@ -86,7 +86,11 @@ export default class MemoNode extends Vue {
     }
   }
 
-  private save() { (this.$store.state.db as DB).save(this.model).then((id) => this.model.id = id); }
+  private save() {
+    (this.$store.state.db as DB).save(this.model).then((id) => {
+      this.model.id = this.model === this.model.getRoot() ? id : undefined;
+    });
+  }
   @Watch('model.value') private onValueChanged() { this.save(); }
   @Watch('model.state') private onStateChanged() { this.save(); }
   @Watch('model.children.length') private onChildChanged() { this.save(); }
