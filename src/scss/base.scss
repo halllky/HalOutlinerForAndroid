@@ -1,10 +1,13 @@
 $c_base: rgb(255, 253, 246);
-$c_main: rgb(255, 237, 213);
-$c_accent: rgb(238, 181, 155);
-
+$c_main: rgb(228, 224, 217);
+$c_accent: rgb(133, 126, 122);
+$c_font: rgb(116, 65, 65);
+$c_main_todo: rgb(253, 231, 170);
+$c_font_todo: rgb(194, 66, 15);
 
 *{
   box-sizing: border-box;
+  color: $c_font;
 }
 html,body{
   display: flex;

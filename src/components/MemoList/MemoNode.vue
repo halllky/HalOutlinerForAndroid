@@ -14,7 +14,7 @@
       ></StretchableTextarea>
       <input type="button" value="+" @click="addChild" class="memo__body__add">
     </div>
-    <ul class="memo__children" v-show="showChildren">
+    <ul class="memo__children" v-if="showChildren">
       <MemoNode
         ref="child"
         v-for="(memo, index) in model.children" :key="index"
@@ -73,22 +73,21 @@ export default class MemoNode extends Vue {
 
 <style lang="scss">
 .memo{
-  background-color: $c_main;
-  &_root{
-    padding: 1px;
-  }
   &__body{
     display: flex;
     background-color: $c_base;
     border-radius: 2px;
+    margin: 1px;
     &_root{
       position: sticky;
       top: 0;
+      filter: drop-shadow(1px 1px 1px $c_main);
     }
     &__text{
       outline: none;
       border: none;
       flex: 1;
+      background-color: $c_base;
     }
     &__expand{
       @include btn-base($bg-color: transparent, $font-color: $c_accent);
@@ -99,9 +98,6 @@ export default class MemoNode extends Vue {
   }
   &__children{
     padding-left: 1em;
-    & > li{
-      margin-top: 1px;
-    }
   }
 }
 </style>

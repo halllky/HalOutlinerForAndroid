@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <ul class="memo-list">
+  <div class="memo-list">
+    <ul class="memo-list__ul">
       <MemoNode
         ref="memo"
         v-for="(memo, index) in model" :key="memo.id || 'new' + index"
@@ -47,8 +47,9 @@ export default class MemoList extends Vue {
 
 <style lang="scss">
 .memo-list{
-  & > li:not(:first-child){
-    margin-top: 1px;
+  background-color: $c_main;
+  &__ul{
+    padding: 1px;
   }
 }
 </style>
