@@ -29,6 +29,7 @@ import { E_MemoType } from '@/ts/const';
 import DB from '@/ts/db';
 
 @Component({
+  name: 'MemoNode',
   components: {
     StretchableTextarea,
   },
