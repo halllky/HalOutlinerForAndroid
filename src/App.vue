@@ -42,25 +42,19 @@ export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
   public pageIndex = 0;
   private isCollapsed = true;
-  private stopPageIndexWatching = false;
+  private addItemInPageIndexWatcher = false;
   public get pageSize() { return (this.$store.state.pageSize as number); }
   public get allDataCount() { return (this.$store.state.db as DB).dataCount; }
 
+  // todo: refactor
   private addRootMemo() {
-    const newMemo = MemoBase.create(E_MemoType.Text);
-    if (this.shownMemos.length >= this.$store.state.pageSize) {
-      // move to new page
-      this.shownMemos = [newMemo];
-      this.pageIndex = (this.allDataCount === 0 ? 0 : Math.ceil(this.allDataCount / this.pageSize));
-      this.stopPageIndexWatching = true;
+    this.addItemInPageIndexWatcher = true;
+    const maxPageIndex = this.allDataCount === 0 ? 0 : Math.ceil(this.allDataCount / this.pageSize) - 1;
+    if (this.pageIndex === maxPageIndex) {
+      this.onPageChanged(maxPageIndex);
     } else {
-      // add to bottom of list
-      this.shownMemos.push(newMemo);
+      this.pageIndex = maxPageIndex;
     }
-    this.$nextTick(() => {
-      // bad practice.
-      (((this.$refs.memoList as MemoList).$refs.memo as Vue[])[this.shownMemos.length - 1] as MemoNode).focus();
-    });
   }
   private collapse() {
     (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
@@ -68,23 +62,25 @@ export default class App extends Vue {
   }
 
   @Watch('pageIndex')
-  private onPageChanged() {
-    // bad practice.
-    if (this.stopPageIndexWatching) {
-      this.stopPageIndexWatching = false;
-      return;
-    }
+  private onPageChanged(newVal = 0) {
     (this.$store.state.db as DB).load({
       limit: this.pageSize,
-      offset: this.pageIndex * this.pageSize,
+      offset: newVal * this.pageSize,
     }).then((data) => {
       this.shownMemos = data;
+      if (this.addItemInPageIndexWatcher) {
+        this.addItemInPageIndexWatcher = false;
+        this.shownMemos.push(MemoBase.create(E_MemoType.Text));
+        this.$nextTick(() => {
+          (((this.$refs.memoList as MemoList).$refs.memo as Vue[])[this.shownMemos.length - 1] as MemoNode).focus();
+        });
+      }
     });
   }
 
   private mounted() {
     import('@/test');
-    this.onPageChanged();
+    this.onPageChanged(0);
   }
 }
 </script>
