@@ -49,6 +49,7 @@ export default class MemoNode extends Vue {
   }
   public addChild() {
     this.model.addChild(MemoBase.create(E_MemoType.Text));
+    this.showChildren = true;
     this.$nextTick(() => {
       // focus to last child (= added child)
       ((this.$refs.child as Vue[])[this.model.children.length - 1] as MemoNode).focus();
