@@ -36,7 +36,6 @@ export default class MemoList extends Vue {
 
 <style lang="scss">
 .memo-list{
-  background-color: $c_main;
   padding: 1px;
 }
 </style>

@@ -1,7 +1,7 @@
-$c_base: rgb(255, 253, 246);
-$c_main: rgb(228, 224, 217);
+$c_base: rgb(228, 224, 217);
+$c_main: rgb(255, 253, 246);
 $c_accent: rgb(133, 126, 122);
-$c_font: rgb(116, 65, 65);
+$c_font: rgb(94, 72, 72);
 $c_main_todo: rgb(253, 231, 170);
 $c_font_todo: rgb(194, 66, 15);
 
@@ -23,7 +23,7 @@ ul{
   margin: 0;
   padding: 0;
 }
-@mixin btn-base($bg-color: $c_accent, $font-color: $c_base){
+@mixin btn-base($bg-color: $c_accent, $font-color: $c_main){
   display: inline-flex;
   justify-content: center;
   outline: none;
