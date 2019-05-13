@@ -12,7 +12,7 @@ npm run serve
 
 ### Compiles and minifies for production
 ```
-npm run build
+sudo npm run android
 ```
 
 ### Run your tests
