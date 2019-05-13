@@ -108,6 +108,7 @@ export default class MemoNode extends Vue {
     background-color: $c_main;
     border-radius: 2px;
     margin: 1px;
+    z-index: 1;
     &_root{
       position: sticky;
       top: 0;
