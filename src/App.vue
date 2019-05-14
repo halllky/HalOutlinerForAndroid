@@ -14,6 +14,7 @@
         v-model="pageIndex"
         :pageSize="$store.state.pageSize"
         :allDataCount="allDataCount"
+        style="margin-bottom: 50vh;"
       ></MyPager>
     </div>
     <div class="app__footer">

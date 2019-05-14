@@ -3,6 +3,7 @@
     <div class="memo__body" :class="{
       'memo__body_root': model.getRoot() === model,
       'memo__body_todo': isTodo}">
+        <span class="memo__icon-todo" v-if="isTodo || !showChildren && hasTodoInChildren"></span>
         <input type="button"
           class="memo__body__expand"
           :value="showChildren || model.children.length === 0 ? '-' : model.children.length"
@@ -28,7 +29,6 @@
         @deleted="removeChild(memo)"
       ></MemoNode>
     </ul>
-    <span class="memo__icon-todo" v-if="isTodo || !showChildren && hasTodoInChildren"></span>
   </li>
 </template>
 
@@ -47,7 +47,7 @@ import DB from '@/ts/db';
 })
 export default class MemoNode extends Vue {
   @Prop() public model!: MemoBase;
-  private showChildren = true;
+  private showChildren = false;
 
   private get isTodo() { return this.model.state === E_MemoState.Todo; }
   private get isCanceled() { return this.model.state === E_MemoState.Cancel; }
@@ -147,14 +147,13 @@ export default class MemoNode extends Vue {
     pointer-events: none;
     position: absolute;
     top: -4px;
-    left: 12px;
+    left: -4px;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    transform: rotate(-10deg);
     background-color: $c_font_todo;
     color: $c_main;
     &::before{
