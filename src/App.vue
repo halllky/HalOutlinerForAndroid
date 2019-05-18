@@ -20,6 +20,7 @@
     <div class="app__footer">
       <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
       <input type="button" value="collapse" @click="collapse" class="app__footer__btn">
+      <input type="button" value="download" @click="download" class="app__footer__btn">
     </div>
   </div>
 </template>
@@ -32,6 +33,7 @@ import { TextMemo, MemoBase } from './ts/memo';
 import { E_MemoType } from './ts/const';
 import DB from './ts/db';
 import MemoNode from './components/MemoList/MemoNode.vue';
+import * as cordovaUtil from '@/cordova-util';
 
 @Component({
   components: {
@@ -60,6 +62,21 @@ export default class App extends Vue {
   private collapse() {
     (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
     this.isCollapsed = !this.isCollapsed;
+  }
+  private async download() {
+      if (!confirm('download?')) { return; }
+      const all = await (this.$store.state.db as DB).load({limit: 99999, offset: 0});
+      const json = JSON.stringify(all, (key, val) => key === 'parent' ? undefined : val);
+      const blob = new Blob([json], {type: 'application/json'});
+      const fileName = 'HalOutliner';
+      if (cordovaUtil.isAndroid()) {
+        prompt('copy here', json);
+      } else {
+        const btn = document.createElement('a');
+        btn.href = URL.createObjectURL(blob);
+        btn.download = fileName;
+        btn.click();
+      }
   }
 
   @Watch('pageIndex')
