@@ -1,17 +1,12 @@
 <template>
-  <div>
-    <ul class="memo-list">
-      <MemoNode
-        ref="memo"
-        v-for="(memo, index) in model" :key="index"
-        :model="memo"
-        @deleted="removeMemo(memo)"
-      ></MemoNode>
-    </ul>
-    <div>
-      <input type="button" @click="addMemo" value="new" class="btn">
-    </div>
-  </div>
+  <ul class="memo-list">
+    <MemoNode
+      ref="memo"
+      v-for="(memo, index) in model" :key="memo.id || 'new' + index"
+      :model="memo"
+      @deleted="removeMemo(memo)"
+    ></MemoNode>
+  </ul>
 </template>
 
 <script lang="ts">
@@ -29,11 +24,8 @@ import DB from '../ts/db';
 export default class MemoList extends Vue {
   @Prop() public model!: MemoBase[];
 
-  public addMemo() {
-    this.model.push(MemoBase.create(E_MemoType.Text));
-    this.$nextTick(() => {
-      ((this.$refs.memo as Vue[])[this.model.length - 1] as MemoNode).focus();
-    });
+  public setCollapse(collapse: boolean) {
+    (this.$refs.memo as Vue[]).forEach((m) => (m as MemoNode).setCollapse(collapse));
   }
   public removeMemo(item: MemoBase) {
     if (item.id !== undefined) { (this.$store.state.db as DB).delete(item.id); }
@@ -44,8 +36,6 @@ export default class MemoList extends Vue {
 
 <style lang="scss">
 .memo-list{
-  & > li:not(:first-child){
-    margin-top: 1px;
-  }
+  padding: 1px;
 }
 </style>

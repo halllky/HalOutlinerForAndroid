@@ -1,16 +1,25 @@
 <template>
   <div id="app" class="app">
     <div class="app__body">
-      <MemoList
-        :model="shownMemos"
-      ></MemoList>
-    </div>
-    <div class="app__footer">
       <MyPager
         v-model="pageIndex"
         :pageSize="$store.state.pageSize"
         :allDataCount="allDataCount"
       ></MyPager>
+      <MemoList
+        ref="memoList"
+        :model="shownMemos"
+      ></MemoList>
+      <MyPager
+        v-model="pageIndex"
+        :pageSize="$store.state.pageSize"
+        :allDataCount="allDataCount"
+        style="margin-bottom: 50vh;"
+      ></MyPager>
+    </div>
+    <div class="app__footer">
+      <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
+      <input type="button" value="collapse" @click="collapse" class="app__footer__btn">
     </div>
   </div>
 </template>
@@ -22,6 +31,7 @@ import MyPager from '@/components/MyPager.vue';
 import { TextMemo, MemoBase } from './ts/memo';
 import { E_MemoType } from './ts/const';
 import DB from './ts/db';
+import MemoNode from './components/MemoList/MemoNode.vue';
 
 @Component({
   components: {
@@ -32,22 +42,46 @@ import DB from './ts/db';
 export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
   public pageIndex = 0;
+  private isCollapsed = true;
+  private addItemInPageIndexWatcher = false;
   public get pageSize() { return (this.$store.state.pageSize as number); }
   public get allDataCount() { return (this.$store.state.db as DB).dataCount; }
 
+  // todo: refactor
+  private addRootMemo() {
+    this.addItemInPageIndexWatcher = true;
+    const maxPageIndex = this.allDataCount === 0 ? 0 : Math.ceil(this.allDataCount / this.pageSize) - 1;
+    if (this.pageIndex === maxPageIndex) {
+      this.onPageChanged(maxPageIndex);
+    } else {
+      this.pageIndex = maxPageIndex;
+    }
+  }
+  private collapse() {
+    (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
+    this.isCollapsed = !this.isCollapsed;
+  }
+
   @Watch('pageIndex')
-  private onPageChanged() {
+  private onPageChanged(newVal = 0) {
     (this.$store.state.db as DB).load({
       limit: this.pageSize,
-      offset: this.pageIndex * this.pageSize,
+      offset: newVal * this.pageSize,
     }).then((data) => {
       this.shownMemos = data;
+      if (this.addItemInPageIndexWatcher) {
+        this.addItemInPageIndexWatcher = false;
+        this.shownMemos.push(MemoBase.create(E_MemoType.Text));
+        this.$nextTick(() => {
+          (((this.$refs.memoList as MemoList).$refs.memo as Vue[])[this.shownMemos.length - 1] as MemoNode).focus();
+        });
+      }
     });
   }
 
   private mounted() {
     import('@/test');
-    this.onPageChanged();
+    this.onPageChanged(0);
   }
 }
 </script>
@@ -56,10 +90,22 @@ export default class App extends Vue {
 .app{
   display: flex;
   flex-direction: column;
+  width: 100%;
   &__body{
     flex: 1;
     overflow-y: scroll;
-    padding-right: 1em;
+  }
+  &__footer{
+    display: flex;
+    justify-content: space-around;
+    & :not(:first-child){
+      margin-left: 4px;
+    }
+    &__btn{
+      @include btn-base();
+      flex: 1;
+      height: 24px;
+    }
   }
 }
 </style>

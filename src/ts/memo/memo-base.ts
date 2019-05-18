@@ -25,7 +25,11 @@ export default abstract class MemoBase {
     // initialize nested property
     if (init.children !== undefined) {
       this.children = [];
-      init.children.forEach((c) => this.children.push(MemoBase.create(c.type, c)));
+      init.children.forEach((c) => {
+        const restored = MemoBase.create(c.type, c);
+        restored.parent = this;
+        this.children.push(restored);
+      });
     }
   }
 
