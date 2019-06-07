@@ -46,4 +46,9 @@ export default abstract class MemoBase {
     child.parent = null;
     this.children = this.children.filter((c) => c !== child);
   }
+  public toJson(): string {
+    return JSON.stringify(this, (key, val) => {
+      return key === 'parent' ? undefined : val;
+    });
+  }
 }
