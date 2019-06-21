@@ -19,8 +19,16 @@
     </div>
     <div class="app__footer">
       <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
+      <input type="button" value="filter" @click="openSearcher" class="app__footer__btn">
       <input type="button" value="collapse" @click="collapse" class="app__footer__btn">
       <input type="button" value="download" @click="download" class="app__footer__btn">
+    </div>
+    <div v-if="dialogOpened" class="app__shade">
+      <SearchConditioner
+        class="app__dialog"
+        @launch="onSearchConditionChanged"
+        @cancel="dialogOpened = false"
+      ></SearchConditioner>
     </div>
   </div>
 </template>
@@ -29,6 +37,7 @@
 import { Component, Watch, Vue } from 'vue-property-decorator';
 import MemoList from '@/components/MemoList.vue';
 import MyPager from '@/components/MyPager.vue';
+import SearchConditioner from '@/components/SearchConditioner.vue';
 import { TextMemo, MemoBase } from './ts/memo';
 import { E_MemoType } from './ts/const';
 import DB from './ts/db';
@@ -39,6 +48,7 @@ import * as cordovaUtil from '@/cordova-util';
   components: {
     MemoList,
     MyPager,
+    SearchConditioner,
   },
 })
 export default class App extends Vue {
@@ -46,6 +56,9 @@ export default class App extends Vue {
   public pageIndex = 0;
   private isCollapsed = true;
   private addItemInPageIndexWatcher = false;
+  private dialogOpened = false;
+  private searchTerms: string[] = [];
+  private showOnlyTodo = false;
   public get pageSize() { return (this.$store.state.pageSize as number); }
   public get allDataCount() { return (this.$store.state.db as DB).dataCount; }
 
@@ -78,12 +91,25 @@ export default class App extends Vue {
         btn.click();
       }
   }
+  private openSearcher() {
+    this.dialogOpened = !this.dialogOpened;
+  }
+  private onSearchConditionChanged(condition: { terms: string[], onlyTodo: boolean }) {
+    this.searchTerms = condition.terms;
+    this.showOnlyTodo = condition.onlyTodo;
+    this.pageIndex = 0;
+    this.dialogOpened = false;
+  }
 
   @Watch('pageIndex')
   private onPageChanged(newVal = 0) {
     (this.$store.state.db as DB).load({
       limit: this.pageSize,
       offset: newVal * this.pageSize,
+      filter: {
+        terms: this.searchTerms,
+        onlyTodo: this.showOnlyTodo,
+      },
     }).then((data) => {
       this.shownMemos = data;
       if (this.addItemInPageIndexWatcher) {
@@ -123,6 +149,22 @@ export default class App extends Vue {
       flex: 1;
       height: 24px;
     }
+  }
+  &__shade{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(black, 0.3);
+  }
+  &__dialog{
+    padding: 1em;
+    background-color: $c_base;
+    border-radius: 4px;
   }
 }
 </style>

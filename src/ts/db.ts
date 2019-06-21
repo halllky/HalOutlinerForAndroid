@@ -1,5 +1,6 @@
 import Dexie from 'dexie';
 import { MemoBase } from './memo';
+import { E_MemoState } from './const';
 
 class DexieEx extends Dexie {
   // Dexie.Table<オブジェクトの型, キーの型>
@@ -32,8 +33,22 @@ export default class DB {
       return id;
     });
   }
-  public async load({limit = 1, offset = 0}): Promise<MemoBase[]> {
-    return this.db.Memos.offset(offset).limit(limit).toArray().then((arr) => {
+  public async load({
+    limit = 1,
+    offset = 0,
+    filter = {
+      terms: new Array<string>(),
+      onlyTodo: false,
+    },
+  }): Promise<MemoBase[]> {
+    const isMatched = (memo: MemoBase): boolean => {
+      const obj = MemoBase.create(memo.type, memo);
+      return obj.find((o) => {
+        return (!filter.onlyTodo || o.state === E_MemoState.Todo)
+          && (!filter.terms.length || filter.terms.some((t) => o.value.indexOf(t) >= 0));
+      });
+    };
+    return this.db.Memos.filter(isMatched).offset(offset).limit(limit).toArray().then((arr) => {
       return arr.map((m) => MemoBase.create(m.type, m));
     });
   }

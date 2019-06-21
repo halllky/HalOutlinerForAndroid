@@ -46,6 +46,9 @@ export default abstract class MemoBase {
     child.parent = null;
     this.children = this.children.filter((c) => c !== child);
   }
+  public find(search: (memo: MemoBase) => boolean): boolean {
+    return search(this) || this.children.some((c) => c.find(search));
+  }
   public toJson(): string {
     return JSON.stringify(this, (key, val) => {
       return key === 'parent' ? undefined : val;
