@@ -16,6 +16,7 @@
         :allDataCount="allDataCount"
         style="margin-bottom: 50vh;"
       ></MyPager>
+      <InfiniteLoading></InfiniteLoading>
     </div>
     <div class="app__footer">
       <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
@@ -35,6 +36,7 @@
 
 <script lang="ts">
 import { Component, Watch, Vue } from 'vue-property-decorator';
+import InfiniteLoading from 'vue-infinite-loading';
 import MemoList from '@/components/MemoList.vue';
 import MyPager from '@/components/MyPager.vue';
 import SearchConditioner from '@/components/SearchConditioner.vue';
@@ -46,6 +48,7 @@ import * as cordovaUtil from '@/cordova-util';
 
 @Component({
   components: {
+    InfiniteLoading,
     MemoList,
     MyPager,
     SearchConditioner,
