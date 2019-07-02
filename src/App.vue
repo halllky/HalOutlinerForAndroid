@@ -1,22 +1,10 @@
 <template>
   <div id="app" class="app">
     <div class="app__body">
-      <MyPager
-        v-model="pageIndex"
-        :pageSize="$store.state.pageSize"
-        :allDataCount="allDataCount"
-      ></MyPager>
       <MemoList
         ref="memoList"
         :model="shownMemos"
       ></MemoList>
-      <MyPager
-        v-model="pageIndex"
-        :pageSize="$store.state.pageSize"
-        :allDataCount="allDataCount"
-        style="margin-bottom: 50vh;"
-      ></MyPager>
-      <InfiniteLoading></InfiniteLoading>
     </div>
     <div class="app__footer">
       <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
@@ -38,7 +26,6 @@
 import { Component, Watch, Vue } from 'vue-property-decorator';
 import InfiniteLoading from 'vue-infinite-loading';
 import MemoList from '@/components/MemoList.vue';
-import MyPager from '@/components/MyPager.vue';
 import SearchConditioner from '@/components/SearchConditioner.vue';
 import { TextMemo, MemoBase } from './ts/memo';
 import { E_MemoType } from './ts/const';
@@ -50,30 +37,18 @@ import * as cordovaUtil from '@/cordova-util';
   components: {
     InfiniteLoading,
     MemoList,
-    MyPager,
     SearchConditioner,
   },
 })
 export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
-  public pageIndex = 0;
   private isCollapsed = true;
-  private addItemInPageIndexWatcher = false;
   private dialogOpened = false;
   private searchTerms: string[] = [];
   private showOnlyTodo = false;
-  public get pageSize() { return (this.$store.state.pageSize as number); }
-  public get allDataCount() { return (this.$store.state.db as DB).dataCount; }
 
   // todo: refactor
   private addRootMemo() {
-    this.addItemInPageIndexWatcher = true;
-    const maxPageIndex = this.allDataCount === 0 ? 0 : Math.ceil(this.allDataCount / this.pageSize) - 1;
-    if (this.pageIndex === maxPageIndex) {
-      this.onPageChanged(maxPageIndex);
-    } else {
-      this.pageIndex = maxPageIndex;
-    }
   }
   private collapse() {
     (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
@@ -100,34 +75,11 @@ export default class App extends Vue {
   private onSearchConditionChanged(condition: { terms: string[], onlyTodo: boolean }) {
     this.searchTerms = condition.terms;
     this.showOnlyTodo = condition.onlyTodo;
-    this.pageIndex = 0;
     this.dialogOpened = false;
-  }
-
-  @Watch('pageIndex')
-  private onPageChanged(newVal = 0) {
-    (this.$store.state.db as DB).load({
-      limit: this.pageSize,
-      offset: newVal * this.pageSize,
-      filter: {
-        terms: this.searchTerms,
-        onlyTodo: this.showOnlyTodo,
-      },
-    }).then((data) => {
-      this.shownMemos = data;
-      if (this.addItemInPageIndexWatcher) {
-        this.addItemInPageIndexWatcher = false;
-        this.shownMemos.push(MemoBase.create(E_MemoType.Text));
-        this.$nextTick(() => {
-          (((this.$refs.memoList as MemoList).$refs.memo as Vue[])[this.shownMemos.length - 1] as MemoNode).focus();
-        });
-      }
-    });
   }
 
   private mounted() {
     import('@/test');
-    this.onPageChanged(0);
   }
 }
 </script>
