@@ -5,6 +5,15 @@
         ref="memoList"
         :model="shownMemos"
       ></MemoList>
+      <InfiniteLoading
+        ref="infBottom"
+        v-if="isInitialized"
+        direction="bottom"
+        @infinite="loadMore"
+      >
+        <template v-slot:no-results>*</template>
+        <template v-slot:no-more>*</template>
+      </InfiniteLoading>
     </div>
     <div class="app__footer">
       <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
@@ -15,7 +24,7 @@
     <div v-if="dialogOpened" class="app__shade">
       <SearchConditioner
         class="app__dialog"
-        @launch="onSearchConditionChanged"
+        @launch="search"
         @cancel="dialogOpened = false"
       ></SearchConditioner>
     </div>
@@ -44,11 +53,58 @@ export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
   private isCollapsed = true;
   private dialogOpened = false;
+  private isInitialized = false;
   private searchTerms: string[] = [];
   private showOnlyTodo = false;
+  private offset: number = 0;
+  private chunk = 30;
 
-  // todo: refactor
+  public search(condition: {
+    terms: string[],
+    onlyTodo: boolean,
+  }) {
+    this.searchTerms = condition.terms;
+    this.showOnlyTodo = condition.onlyTodo;
+    this.reset();
+    this.dialogOpened = false;
+  }
+
+  private async reset() {
+    return (this.$store.state.db as DB).load({
+      limit: this.chunk,
+      offset: 0,
+      filter: {
+        terms: this.searchTerms,
+        onlyTodo: this.showOnlyTodo,
+      },
+    }).then((memos) => {
+      this.shownMemos = memos;
+      this.isInitialized = true;
+      if (memos.length) { this.offset = memos.length; }
+      (this.$refs.infBottom as InfiniteLoading).stateChanger.reset();
+    });
+  }
+  private async loadMore($state: any) {
+    return (this.$store.state.db as DB).load({
+      limit: this.chunk,
+      offset: this.offset,
+      filter: {
+        terms: this.searchTerms,
+        onlyTodo: this.showOnlyTodo,
+      },
+    }).then(async (memos) => {
+      if (memos.length) {
+        this.shownMemos.push(...memos);
+        this.offset += memos.length;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        $state.loaded();
+      } else {
+        $state.complete();
+      }
+    });
+  }
   private addRootMemo() {
+    this.shownMemos.unshift(MemoBase.create(E_MemoType.Text));
   }
   private collapse() {
     (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
@@ -80,6 +136,7 @@ export default class App extends Vue {
 
   private mounted() {
     import('@/test');
+    this.reset();
   }
 }
 </script>
