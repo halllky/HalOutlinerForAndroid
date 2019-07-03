@@ -48,9 +48,15 @@ export default class DB {
           && (!filter.terms.length || filter.terms.some((t) => o.value.indexOf(t) >= 0));
       });
     };
-    return this.db.Memos.filter(isMatched).offset(offset).limit(limit).toArray().then((arr) => {
-      return arr.map((m) => MemoBase.create(m.type, m));
-    });
+    return this.db.Memos
+      .reverse()
+      .filter(isMatched)
+      .offset(offset)
+      .limit(limit)
+      .toArray()
+      .then((arr) => {
+        return arr.map((m) => MemoBase.create(m.type, m));
+      });
   }
   public async loadById(id: number): Promise<MemoBase | undefined> {
     return this.db.Memos.get(id);
