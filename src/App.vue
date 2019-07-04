@@ -105,6 +105,9 @@ export default class App extends Vue {
   }
   private addRootMemo() {
     this.shownMemos.unshift(MemoBase.create(E_MemoType.Text));
+    this.$nextTick(() => {
+      (this.$refs.memoList as MemoList).focusToLatest();
+    });
   }
   private collapse() {
     (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
