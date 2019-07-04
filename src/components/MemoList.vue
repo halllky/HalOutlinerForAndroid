@@ -27,6 +27,10 @@ export default class MemoList extends Vue {
   public setCollapse(collapse: boolean) {
     (this.$refs.memo as Vue[]).forEach((m) => (m as MemoNode).setCollapse(collapse));
   }
+  public focusToLatest() {
+    if (this.model.length === 0) { return; }
+    ((this.$refs.memo as Vue[])[this.model.length - 1] as MemoNode).focus();
+  }
   public removeMemo(item: MemoBase) {
     if (item.id !== undefined) { (this.$store.state.db as DB).delete(item.id); }
     this.model.splice(this.model.indexOf(item), 1);
