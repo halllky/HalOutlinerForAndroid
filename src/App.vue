@@ -9,6 +9,7 @@
         ref="infBottom"
         v-if="isInitialized"
         direction="bottom"
+        distance="250"
         @infinite="loadMore"
       >
         <template v-slot:no-results>*</template>
@@ -57,7 +58,7 @@ export default class App extends Vue {
   private searchTerms: string[] = [];
   private showOnlyTodo = false;
   private offset: number = 0;
-  private chunk = 30;
+  private chunk = 50;
 
   public search(condition: {
     terms: string[],

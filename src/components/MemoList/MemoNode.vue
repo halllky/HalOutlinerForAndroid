@@ -1,21 +1,25 @@
 <template>
-  <li class="memo" :class="{'memo_root': model.getRoot() === model}">
+  <li class="memo" :class="{'memo_root': isRoot }">
     <div class="memo__body" :class="{
-      'memo__body_root': model.getRoot() === model,
+      'memo__body_root': isRoot,
       'memo__body_todo': isTodo}">
         <span class="memo__icon-todo" v-if="isTodo || !showChildren && hasTodoInChildren"></span>
         <input type="button"
           class="memo__body__expand"
           :value="showChildren || model.children.length === 0 ? '-' : model.children.length"
           @click="collapse">
-        <StretchableTextarea
-          ref="textarea"
-          v-model="model.value"
-          class="memo__body__text"
-          :class="{'memo__body__text_todo': isTodo, 'memo__body__text_cancel': isCanceled}"
-          :style="{'font-size': $store.state.fontSize + 'px'}"
-          @blur="deleteIfEmpty"
-        ></StretchableTextarea>
+        <label class="memo__body-center">
+          <StretchableTextarea
+            ref="textarea"
+            v-model="model.value"
+            class="memo__body__text"
+            :class="{'memo__body__text_todo': isTodo, 'memo__body__text_cancel': isCanceled}"
+            :style="{'font-size': $store.state.fontSize + 'px'}"
+            @blur="deleteIfEmpty"
+          ></StretchableTextarea>
+          <div class="memo__time" v-if="isRoot" v-text="model.createdTime.toLocaleString()">
+          </div>
+        </label>
         <div class="memo__body__right">
           <input type="button" value="+" @click="addChild" class="btn">
           <input type="button" value="s" @click="changeState" class="btn">
@@ -49,6 +53,7 @@ export default class MemoNode extends Vue {
   @Prop() public model!: MemoBase;
   private showChildren = false;
 
+  private get isRoot() { return this.model === this.model.getRoot(); }
   private get isTodo() { return this.model.state === E_MemoState.Todo; }
   private get isCanceled() { return this.model.state === E_MemoState.Cancel; }
   private get hasTodoInChildren() {
@@ -88,7 +93,7 @@ export default class MemoNode extends Vue {
 
   private save() {
     (this.$store.state.db as DB).save(this.model).then((id) => {
-      this.model.id = this.model === this.model.getRoot() ? id : undefined;
+      this.model.id = this.isRoot ? id : undefined;
     });
   }
   @Watch('model.value') private onValueChanged() { this.save(); }
@@ -115,7 +120,6 @@ export default class MemoNode extends Vue {
     &__text{
       outline: none;
       border: none;
-      flex: 1;
       background-color: transparent;
       &_todo{
         color: $c_font_todo;
@@ -134,6 +138,18 @@ export default class MemoNode extends Vue {
         margin-left: 1px;
       }
     }
+  }
+  &__body-center{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  &__time{
+    display: flex;
+    justify-content: flex-end;
+    font-size: 10px;
+    color: $c_font_weak;
+    user-select: none;
   }
   &__children{
     padding-left: 1em;
