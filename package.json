@@ -16,8 +16,15 @@
     "android": "npm run build && cordova run android"
   },
   "dependencies": {
-    "dexie": "^2.0.4",
     "cordova-android": "^8.0.0",
+    "cordova-plugin-android-permissions": "^1.0.0",
+    "cordova-plugin-file": "^6.0.2",
+    "cordova-plugin-file-downloader": "^0.4.0",
+    "cordova-plugin-file-md5": "^0.3.3",
+    "cordova-plugin-file-transfer": "^1.7.1",
+    "cordova-plugin-network-information": "^2.0.2",
+    "cordova-plugin-zip": "^3.1.0",
+    "dexie": "^2.0.4",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-infinite-loading": "^2.4.4",
@@ -46,7 +53,10 @@
   ],
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-file-downloader": {},
+      "cordova-plugin-android-permissions": {}
     },
     "platforms": [
       "android"

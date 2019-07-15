@@ -119,15 +119,7 @@ export default class App extends Vue {
       const all = await (this.$store.state.db as DB).load({limit: 99999, offset: 0});
       const json = JSON.stringify(all, (key, val) => key === 'parent' ? undefined : val);
       const blob = new Blob([json], {type: 'application/json'});
-      const fileName = 'HalOutliner';
-      if (cordovaUtil.isAndroid()) {
-        prompt('copy here', json);
-      } else {
-        const btn = document.createElement('a');
-        btn.href = URL.createObjectURL(blob);
-        btn.download = fileName;
-        btn.click();
-      }
+      cordovaUtil.download('HalOutliner.json', blob);
   }
   private openSearcher() {
     this.dialogOpened = !this.dialogOpened;
