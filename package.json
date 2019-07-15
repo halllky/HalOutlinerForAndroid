@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "cordova-android": "^8.0.0",
+    "cordova-plugin-android-permissions": "^1.0.0",
     "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-file-downloader": "^0.4.0",
     "cordova-plugin-file-md5": "^0.3.3",
@@ -54,7 +55,8 @@
     "plugins": {
       "cordova-plugin-whitelist": {},
       "cordova-plugin-file": {},
-      "cordova-plugin-file-downloader": {}
+      "cordova-plugin-file-downloader": {},
+      "cordova-plugin-android-permissions": {}
     },
     "platforms": [
       "android"
