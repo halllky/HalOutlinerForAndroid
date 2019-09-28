@@ -44,8 +44,12 @@ export default class DB {
     const isMatched = (memo: MemoBase): boolean => {
       const obj = MemoBase.create(memo.type, memo);
       return obj.find((o) => {
-        return (!filter.onlyTodo || o.state === E_MemoState.Todo)
-          && (!filter.terms.length || filter.terms.some((t) => o.value.indexOf(t) >= 0));
+        return (
+          !filter.onlyTodo || o.state === E_MemoState.Todo
+        ) && (
+          !filter.terms.length
+          || filter.terms.some((t) => o.value.toLowerCase().indexOf(t.toLowerCase()) >= 0)
+        );
       });
     };
     return this.db.Memos
