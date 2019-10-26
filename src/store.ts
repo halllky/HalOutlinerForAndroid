@@ -9,7 +9,7 @@ export default new Vuex.Store({
   state: {
     db: new DB(DBName),
     pageSize: 10,
-    fontSize: 14,
+    fontSize: 16,
   },
   mutations: {
     CHANGE_PAGE_SIZE(store, size: number) { store.pageSize = size; },
