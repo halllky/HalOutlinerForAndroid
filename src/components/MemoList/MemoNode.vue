@@ -4,11 +4,13 @@
       'memo__body_root': isRoot,
       'memo__body_todo': isTodo}">
         <span class="memo__icon-todo" v-if="isTodo || !showChildren && hasTodoInChildren"></span>
+        <!-- 子要素展開ボタン -->
         <input type="button"
           class="memo__body__expand"
           :value="showChildren || model.children.length === 0 ? '-' : model.children.length"
           @click="collapse">
         <label class="memo__body-center">
+          <!-- メモ本体 -->
           <StretchableTextarea
             ref="textarea"
             v-model="model.value"
@@ -17,14 +19,14 @@
             :style="{'font-size': $store.state.fontSize + 'px'}"
             @blur="deleteIfEmpty"
           ></StretchableTextarea>
-          <div class="memo__time" v-if="isRoot" v-text="model.createdTime.toLocaleString()">
+          <!-- 作成時刻表示とアイテムd追加ボタン -->
+          <div class="memo__body-footer">
+            <span class="memo__time" v-if="isRoot" v-text="model.createdTime.toLocaleString()"></span>
+            <input type="button" class="memo__add-btn" value="+" @click="addChild">
           </div>
         </label>
-        <div class="memo__body__right">
-          <input type="button" value="+" @click="addChild" class="btn">
-          <input type="button" value="s" @click="changeState" class="btn">
-        </div>
     </div>
+    <!-- 子 -->
     <ul class="memo__children" v-if="showChildren">
       <MemoNode
         ref="child"
@@ -113,6 +115,7 @@ export default class MemoNode extends Vue {
     background-color: $c_main;
     border-radius: 2px;
     margin: 1px;
+    padding: 4px;
     z-index: 1;
     &_todo{
       background-color: $c_main_todo;
@@ -143,13 +146,27 @@ export default class MemoNode extends Vue {
     display: flex;
     flex-direction: column;
     flex: 1;
+    position: relative;
   }
-  &__time{
+  &__body-footer {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+  }
+  &__time{
     font-size: 10px;
     color: $c_font_weak;
     user-select: none;
+    margin-right: 4em;
+  }
+  &__add-btn {
+    @extend .btn;
+    position: absolute;
+    bottom: -6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    z-index: 1;
   }
   &__children{
     padding-left: 1em;
