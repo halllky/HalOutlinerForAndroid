@@ -41,5 +41,6 @@ export default class MemoList extends Vue {
 <style lang="scss">
 .memo-list{
   padding: 1px;
+  overflow-x: hidden;  // スワイプ対応
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
   <li class="memo" :class="{'memo_root': isRoot }">
-    <div class="memo__body" :class="{
-      'memo__body_root': isRoot,
-      'memo__body_todo': isTodo}">
+    <div class="memo__body" ref="bodyMain" :class="{ 'memo__body_root': isRoot, 'memo__body_todo': isTodo}"
+      draggable @dragstart="onDragStart" @drag="onDrag" @dragend="onDragEnd"
+    >
         <span class="memo__icon-todo" v-if="isTodo || !showChildren && hasTodoInChildren"></span>
         <!-- 子要素展開ボタン -->
         <input type="button"
           class="memo__body__expand"
           :value="showChildren || model.children.length === 0 ? '-' : model.children.length"
           @click="collapse">
-        <label class="memo__body-center">
+        <label class="memo__body-main">
           <!-- メモ本体 -->
           <StretchableTextarea
             ref="textarea"
@@ -85,13 +85,6 @@ export default class MemoNode extends Vue {
     if (this.$refs.child === undefined) { return; }
     (this.$refs.child as Vue[]).forEach((c) => (c as MemoNode).setCollapse(collapse));
   }
-  public changeState() {
-    switch (this.model.state) {
-      case E_MemoState.Todo: this.model.state = E_MemoState.Cancel; break;
-      case E_MemoState.None: this.model.state = E_MemoState.Todo; break;
-      default: this.model.state = E_MemoState.None; break;
-    }
-  }
 
   private save() {
     (this.$store.state.db as DB).save(this.model).then((id) => {
@@ -103,6 +96,45 @@ export default class MemoNode extends Vue {
   @Watch('model.children.length') private onChildChanged() { this.save(); }
   private collapse() {
     this.showChildren = !this.showChildren;
+  }
+
+  private onSwipe() {
+    // todoの状態を変える
+    if (this.model.state === E_MemoState.None) {
+      this.model.state = E_MemoState.Todo;
+    } else if (this.model.state === E_MemoState.Todo) {
+      this.model.state = E_MemoState.Cancel;
+    } else {
+      this.model.state = E_MemoState.None;
+    }
+  }
+
+  /** 横スワイプ制御 */
+  private dragStartX = 0;
+  private changedOnTheSwipe = false;
+  private onDragStart(e: DragEvent) {
+    this.dragStartX = e.clientX;
+    this.changedOnTheSwipe = false;
+    // マウスにくっついてくる画像を無効化
+    if (e.dataTransfer) {
+      const img = document.createElement('div');
+      img.style.display = 'none';
+      e.dataTransfer.setDragImage(img, 0, 0);
+    }
+  }
+  private onDrag(e: DragEvent) {
+    const bodyMain = this.$refs.bodyMain as HTMLElement;
+    const distance = e.clientX - this.dragStartX;
+    const triggerLine = (this.$el as HTMLElement).clientWidth / 2;
+    bodyMain.style.transform = `translateX(${distance}px)`;
+    if (!this.changedOnTheSwipe && Math.abs(distance) > triggerLine) {
+      this.onSwipe();
+      this.changedOnTheSwipe = true;
+    }
+  }
+  private onDragEnd(e: DragEvent) {
+    const bodyMain = this.$refs.bodyMain as HTMLElement;
+    bodyMain.style.transform = '';
   }
 }
 </script>
@@ -142,7 +174,7 @@ export default class MemoNode extends Vue {
       }
     }
   }
-  &__body-center{
+  &__body-main{
     display: flex;
     flex-direction: column;
     flex: 1;
