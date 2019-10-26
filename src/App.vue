@@ -1,5 +1,10 @@
 <template>
   <div id="app" class="app">
+    <div class="app__header">
+      <SearchConditioner
+        @launch="search"
+      ></SearchConditioner>
+    </div>
     <div class="app__body">
       <MemoList
         ref="memoList"
@@ -18,16 +23,8 @@
     </div>
     <div class="app__footer">
       <input type="button" value="new memo" @click="addRootMemo" class="app__footer__btn">
-      <input type="button" value="filter" @click="openSearcher" class="app__footer__btn">
       <input type="button" value="collapse" @click="collapse" class="app__footer__btn">
       <input type="button" value="download" @click="download" class="app__footer__btn">
-    </div>
-    <div v-if="dialogOpened" class="app__shade">
-      <SearchConditioner
-        class="app__dialog"
-        @launch="search"
-        @cancel="dialogOpened = false"
-      ></SearchConditioner>
     </div>
   </div>
 </template>
@@ -53,7 +50,7 @@ import * as cordovaUtil from '@/cordova-util';
 export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
   private isCollapsed = true;
-  private dialogOpened = false;
+  private dialogOpened = false
   private isInitialized = false;
   private searchTerms: string[] = [];
   private showOnlyTodo = false;

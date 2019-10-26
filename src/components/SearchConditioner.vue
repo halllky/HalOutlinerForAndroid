@@ -1,20 +1,16 @@
 <template>
   <div class="searcher">
-    <div class="searcher__condition">
-      <input type="text"
-        v-model="term"
-        class="searcher__text"
-        spellcheck="false"
-        onfocus="select();">
-      <label>
-        <input type="checkbox" v-model="onlyTodo">
-        todoのみ
-      </label>
-    </div>
-    <div class="searcher__footer">
-      <input type="button" value="OK" @click="launch">
-      <input type="button" value="キャンセル" @click="cancel">
-    </div>
+    <input type="text"
+      v-model="term"
+      class="searcher__text"
+      spellcheck="false"
+      onfocus="select();"
+      @keyup="onKeyup">
+    <label class="searcher__check">
+      <input type="checkbox" v-model="onlyTodo">
+      todoのみ
+    </label>
+    <input type="button" value="検索" @click="launch">
   </div>
 </template>
 
@@ -35,22 +31,32 @@ export default class SearchConditioner extends Vue {
     });
   }
   @Emit() public cancel() { /* */ }
+
+  // 検索窓内でEnter押したら検索実行
+  private onKeyup(e: KeyboardEvent) {
+    if (e.keyCode === 13) { this.launch(); }
+  }
 }
 </script>
 
 <style lang="scss">
 .searcher {
-  &__condition {
-    display: flex;
-    flex-direction: column;
-  }
-  &__footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 12px;
-  }
+  display: flex;
+  justify-content: space-between;
+  padding: 2px;
+  background: $c_accent;
   &__text {
     font-size: 20px;
+    padding: 7px;
+    border: none;
+    border-radius: 12px;
+    width: 11em;
+    outline: none;
+  }
+  &__check {
+    font-size: 12px;
+    white-space: nowrap;
+    color: $c_base;
   }
 }
 </style>
