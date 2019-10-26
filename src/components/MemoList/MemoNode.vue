@@ -17,12 +17,12 @@
             class="memo__body__text"
             :class="{'memo__body__text_todo': isTodo, 'memo__body__text_cancel': isCanceled}"
             :style="{'font-size': $store.state.fontSize + 'px'}"
-            @blur="deleteIfEmpty"
+            @blur="onBlurTextarea"
           ></StretchableTextarea>
           <!-- 作成時刻表示とアイテムd追加ボタン -->
           <div class="memo__body-footer">
             <span class="memo__time" v-if="isRoot" v-text="model.createdTime.toLocaleString()"></span>
-            <input type="button" class="memo__add-btn" value="+" @click="addChild">
+            <input type="button" class="memo__add-btn" value="+" @click="onAddChildClicked">
           </div>
         </label>
     </div>
@@ -32,7 +32,7 @@
         ref="child"
         v-for="(memo, index) in model.children" :key="index"
         :model="memo"
-        @deleted="removeChild(memo)"
+        @deleted="onEmittedDelete(memo)"
       ></MemoNode>
     </ul>
   </li>
@@ -55,6 +55,7 @@ export default class MemoNode extends Vue {
   @Prop() public model!: MemoBase;
   private showChildren = false;
 
+  // テンプレート用
   private get isRoot() { return this.model === this.model.getRoot(); }
   private get isTodo() { return this.model.state === E_MemoState.Todo; }
   private get isCanceled() { return this.model.state === E_MemoState.Cancel; }
@@ -65,12 +66,13 @@ export default class MemoNode extends Vue {
     return hasTodo(this.model);
   }
 
-  public deleteIfEmpty() {
+  public onBlurTextarea() {
+    // 何も書かれていないメモなら削除
     if (this.model.value === '' && this.model.children.length === 0) {
       this.$emit('deleted', this.model);
     }
   }
-  public addChild() {
+  public onAddChildClicked() {
     this.model.addChild(MemoBase.create(E_MemoType.Text));
     this.showChildren = true;
     this.$nextTick(() => {
@@ -78,7 +80,7 @@ export default class MemoNode extends Vue {
       ((this.$refs.child as Vue[])[this.model.children.length - 1] as MemoNode).focus();
     });
   }
-  public removeChild(item: MemoBase) { this.model.removeChild(item); }
+  public onEmittedDelete(item: MemoBase) { this.model.removeChild(item); }
   public focus() { (this.$refs.textarea as StretchableTextarea).focus(); }
   public setCollapse(collapse: boolean) {
     this.showChildren = !collapse;
@@ -109,7 +111,7 @@ export default class MemoNode extends Vue {
     }
   }
 
-  /** 横スワイプ制御 */
+  /** 横スワイプ制御(onSwipeイベント起動のため) */
   private dragStartX = 0;
   private changedOnTheSwipe = false;
   private onDragStart(e: DragEvent) {
