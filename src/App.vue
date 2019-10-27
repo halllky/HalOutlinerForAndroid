@@ -134,6 +134,7 @@ export default class App extends Vue {
   &__body{
     flex: 1;
     overflow-y: scroll;
+    padding-bottom: 50vh;
   }
   &__footer{
     display: flex;
