@@ -4,6 +4,8 @@ import store from './store';
 
 Vue.config.productionTip = false;
 
+import './scss/base.scss';
+
 // モバイル端末でドラッグドロップを有効にする
 import { polyfill } from 'mobile-drag-drop';
 import { scrollBehaviourDragImageTranslateOverride } from 'mobile-drag-drop/scroll-behaviour';
