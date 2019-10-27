@@ -21,10 +21,8 @@
         <template v-slot:no-more>*</template>
       </InfiniteLoading>
     </div>
-    <input type="button" value="+" @click="addRootMemo" class="app__add-btn">
-    <div class="app__footer">
-      <input type="button" value="download" @click="download" class="app__footer__btn">
-    </div>
+    <input type="button" value="+" @click="addRootMemo" class="app__float-btn--left">
+    <input type="button" value="…" @click="download" class="app__float-btn--right">
   </div>
 </template>
 
@@ -165,15 +163,22 @@ export default class App extends Vue {
     background-color: $c_base;
     border-radius: 4px;
   }
-  &__add-btn{
+  &__float-btn{
     @include btn-base();
     position: absolute;
-    left: 12px;
     bottom: 24px;
     width: 48px;
     height: 48px;
     border-radius: 50%;
     font-size: 28px;
+    &--left {
+      @extend .app__float-btn;
+      left: 12px;
+    }
+    &--right {
+      @extend .app__float-btn;
+      right: 12px;
+    }
   }
 }
 </style>
