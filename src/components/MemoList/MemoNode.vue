@@ -1,7 +1,7 @@
 <template>
   <li class="memo" :class="{'memo_root': isRoot }">
     <div class="memo__body" ref="bodyMain" :class="{ 'memo__body_root': isRoot, 'memo__body_todo': isTodo}"
-      draggable @dragstart="onDragStart" @drag="onDrag" @dragend="onDragEnd"
+      @touchstart="onDragStart" @touchmove="onDrag" @touchend="onDragEnd" @touchcancel="onDragEnd"
     >
         <span class="memo__icon-todo" v-if="isTodo || !showChildren && hasTodoInChildren"></span>
         <!-- 子要素展開ボタン -->
@@ -113,28 +113,26 @@ export default class MemoNode extends Vue {
 
   /** 横スワイプ制御(onSwipeイベント起動のため) */
   private dragStartX = 0;
-  private changedOnTheSwipe = false;
-  private onDragStart(e: DragEvent) {
-    this.dragStartX = e.clientX;
-    this.changedOnTheSwipe = false;
-    // マウスにくっついてくる画像を無効化
-    if (e.dataTransfer) {
-      const img = document.createElement('div');
-      img.style.display = 'none';
-      e.dataTransfer.setDragImage(img, 0, 0);
-    }
+  private isSwipeEventOccured = false;
+  private onDragStart(e: TouchEvent) {
+    this.dragStartX = e.touches[0].clientX;
+    this.isSwipeEventOccured = false;
   }
-  private onDrag(e: DragEvent) {
+  private onDrag(e: TouchEvent) {
+    // タッチ開始地点からの横方向移動距離
+    const distance = e.touches[0].clientX - this.dragStartX;
+    // 要素を横にずらす。画面スクロールで動かないように、距離が小さければ動かさない
     const bodyMain = this.$refs.bodyMain as HTMLElement;
-    const distance = e.clientX - this.dragStartX;
+    bodyMain.style.transform = Math.abs(distance) < 40 ? '' : `translateX(${distance}px)`;
+    // 一定以上横方向に移動したらonSwipeイベント発火
     const triggerLine = (this.$el as HTMLElement).clientWidth / 2;
-    bodyMain.style.transform = `translateX(${distance}px)`;
-    if (!this.changedOnTheSwipe && Math.abs(distance) > triggerLine) {
+    if (!this.isSwipeEventOccured && Math.abs(distance) > triggerLine) {
       this.onSwipe();
-      this.changedOnTheSwipe = true;
+      // 1度のスワイプで1回だけ発火するようにする
+      this.isSwipeEventOccured = true;
     }
   }
-  private onDragEnd(e: DragEvent) {
+  private onDragEnd(e: TouchEvent) {
     const bodyMain = this.$refs.bodyMain as HTMLElement;
     bodyMain.style.transform = '';
   }
