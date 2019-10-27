@@ -24,9 +24,6 @@ import DB from '../ts/db';
 export default class MemoList extends Vue {
   @Prop() public model!: MemoBase[];
 
-  public setCollapse(collapse: boolean) {
-    (this.$refs.memo as Vue[]).forEach((m) => (m as MemoNode).setCollapse(collapse));
-  }
   public focusToLatest() {
     if (this.model.length === 0) { return; }
     ((this.$refs.memo as Vue[])[this.model.length - 1] as MemoNode).focus();

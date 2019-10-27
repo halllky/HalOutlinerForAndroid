@@ -82,11 +82,6 @@ export default class MemoNode extends Vue {
   }
   public onEmittedDelete(item: MemoBase) { this.model.removeChild(item); }
   public focus() { (this.$refs.textarea as StretchableTextarea).focus(); }
-  public setCollapse(collapse: boolean) {
-    this.showChildren = !collapse;
-    if (this.$refs.child === undefined) { return; }
-    (this.$refs.child as Vue[]).forEach((c) => (c as MemoNode).setCollapse(collapse));
-  }
 
   private save() {
     (this.$store.state.db as DB).save(this.model).then((id) => {

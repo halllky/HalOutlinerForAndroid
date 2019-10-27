@@ -23,7 +23,6 @@
     </div>
     <input type="button" value="+" @click="addRootMemo" class="app__add-btn">
     <div class="app__footer">
-      <input type="button" value="collapse" @click="collapse" class="app__footer__btn">
       <input type="button" value="download" @click="download" class="app__footer__btn">
     </div>
   </div>
@@ -49,7 +48,6 @@ import * as cordovaUtil from '@/cordova-util';
 })
 export default class App extends Vue {
   public shownMemos: MemoBase[] = [];
-  private isCollapsed = true;
   private dialogOpened = false
   private isInitialized = false;
   private searchTerms: string[] = [];
@@ -106,10 +104,6 @@ export default class App extends Vue {
     this.$nextTick(() => {
       (this.$refs.memoList as MemoList).focusToLatest();
     });
-  }
-  private collapse() {
-    (this.$refs.memoList as MemoList).setCollapse(this.isCollapsed);
-    this.isCollapsed = !this.isCollapsed;
   }
   private async download() {
       if (!confirm('download?')) { return; }
