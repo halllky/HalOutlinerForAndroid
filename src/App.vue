@@ -171,6 +171,8 @@ export default class App extends Vue {
     height: 48px;
     border-radius: 50%;
     font-size: 28px;
+    background-color: lighten($c_accent, 15%);
+    z-index: 10;
     &--left {
       @extend .app__float-btn;
       left: 12px;

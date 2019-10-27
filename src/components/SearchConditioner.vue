@@ -5,6 +5,7 @@
       class="searcher__text"
       spellcheck="false"
       onfocus="select();"
+      placeholder="検索"
       @keyup="onKeyup">
     <label class="searcher__check">
       <input type="checkbox" v-model="onlyTodo">
@@ -49,9 +50,12 @@ export default class SearchConditioner extends Vue {
     font-size: 20px;
     padding: 7px;
     border: none;
-    border-radius: 12px;
+    border-radius: 1em;
     width: 11em;
     outline: none;
+    &::placeholder {
+      color: rgba($c_font_weak, .5);
+    }
   }
   &__check {
     font-size: 12px;
