@@ -15,7 +15,11 @@
             ref="textarea"
             v-model="model.value"
             class="memo__body__text"
-            :class="{'memo__body__text_todo': isTodo, 'memo__body__text_cancel': isCanceled}"
+            :class="{
+              'memo__body__text_todo': isTodo,
+              'memo__body__text_cancel': isCanceled,
+              'memo__body__text--child': !isRoot
+            }"
             :style="{'font-size': $store.state.fontSize + 'px'}"
             @blur="onBlurTextarea"
           ></StretchableTextarea>
@@ -151,6 +155,9 @@ export default class MemoNode extends Vue {
       outline: none;
       border: none;
       background-color: transparent;
+      &--child{
+        padding-right: 28px; // 追加ボタンで文字が隠れるのを防ぐ
+      }
       &_todo{
         color: $c_font_todo;
       }
