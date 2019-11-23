@@ -3,6 +3,7 @@
     v-model="_value"
     spellcheck="false"
     class="str-text"
+    @input="change"
     @blur="blur"
   ></textarea>
 </template>
@@ -15,6 +16,7 @@ export default class StretchableTextarea extends Vue {
   public get _value(): string { return this.value; }
   public set _value(newVal) { this.$emit('input', newVal); }
 
+  @Emit() public change() { /**/ }
   @Emit() public blur() { /**/ }
 
   public mounted() { this.resize(); }

@@ -21,6 +21,7 @@
               'memo__body__text--child': !isRoot
             }"
             :style="{'font-size': $store.state.fontSize + 'px'}"
+            @change="save"
             @blur="onBlurTextarea"
           ></StretchableTextarea>
           <!-- 作成時刻表示とアイテムd追加ボタン -->
@@ -78,23 +79,24 @@ export default class MemoNode extends Vue {
   }
   public onAddChildClicked() {
     this.model.addChild(MemoBase.create(E_MemoType.Text));
+    this.save();
     this.showChildren = true;
     this.$nextTick(() => {
       // focus to last child (= added child)
       ((this.$refs.child as Vue[])[this.model.children.length - 1] as MemoNode).focus();
     });
   }
-  public onEmittedDelete(item: MemoBase) { this.model.removeChild(item); }
+  public onEmittedDelete(item: MemoBase) {
+    this.model.removeChild(item);
+    this.save();
+  }
   public focus() { (this.$refs.textarea as StretchableTextarea).focus(); }
 
   private save() {
-    (this.$store.state.db as DB).save(this.model).then((id) => {
-      this.model.id = this.isRoot ? id : undefined;
+    (this.$store.state.db as DB).save(this.model.getRoot()).then((id) => {
+      this.model.getRoot().id = id;
     });
   }
-  @Watch('model.value') private onValueChanged() { this.save(); }
-  @Watch('model.state') private onStateChanged() { this.save(); }
-  @Watch('model.children.length') private onChildChanged() { this.save(); }
   private collapse() {
     this.showChildren = !this.showChildren;
   }
@@ -108,6 +110,7 @@ export default class MemoNode extends Vue {
     } else {
       this.model.state = E_MemoState.None;
     }
+    this.save();
   }
 
   /** 横スワイプ制御(onSwipeイベント起動のため) */
