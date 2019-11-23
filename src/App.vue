@@ -14,7 +14,7 @@
         ref="infBottom"
         v-if="isInitialized"
         direction="bottom"
-        distance="250"
+        :distance="250"
         @infinite="loadMore"
       >
         <template v-slot:no-results>*</template>
