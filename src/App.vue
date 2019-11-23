@@ -83,7 +83,7 @@ export default class App extends Vue {
       this.shownMemos = memos;
       this.isInitialized = true;
       if (memos.length) { this.offset = memos.length; }
-      (this.$refs.infBottom as InfiniteLoading).stateChanger.reset();
+      this.$nextTick(() => (this.$refs.infBottom as InfiniteLoading).stateChanger.reset());
     });
   }
   private async loadMore($state: any) {
