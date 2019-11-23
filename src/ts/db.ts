@@ -55,10 +55,10 @@ export default class DB {
           || args.filter.terms.some((t) => o.value.toLowerCase().indexOf(t.toLowerCase()) >= 0)
         ) && (
           !args.filter.from
-          || o.getRoot().createdTime.getDate() >= args.filter.from.toDate().getDate()
+          || moment(o.getRoot().createdTime).startOf('day') >= args.filter.from
         ) && (
           !args.filter.to
-          || o.getRoot().createdTime.getDate() <= args.filter.to.toDate().getDate()
+          || moment(o.getRoot().createdTime).startOf('day') <= args.filter.to
         );
       });
     };
