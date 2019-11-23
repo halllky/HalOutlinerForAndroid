@@ -5,10 +5,14 @@
       style="z-index: 2"
     ></SearchConditioner>
     <div class="app__body">
-      <MemoList
-        ref="memoList"
-        :model="shownMemos"
-      ></MemoList>
+      <ul class="app__memo-list">
+        <MemoNode
+          ref="memos"
+          v-for="(memo, index) in shownMemos" :key="memo.id || 'new' + index"
+          :model="memo"
+          @deleted="removeRootMemo(memo)"
+        ></MemoNode>
+      </ul>
       <InfiniteLoading
         ref="infBottom"
         v-if="isInitialized"
@@ -29,18 +33,17 @@
 import { Component, Watch, Vue } from 'vue-property-decorator';
 import InfiniteLoading from 'vue-infinite-loading';
 import moment from 'moment';
-import MemoList from '@/components/MemoList.vue';
 import SearchConditioner from '@/components/SearchConditioner.vue';
 import { TextMemo, MemoBase } from './ts/memo';
 import { E_MemoType } from './ts/const';
 import DB from './ts/db';
-import MemoNode from './components/MemoList/MemoNode.vue';
+import MemoNode from './components/MemoNode.vue';
 import * as cordovaUtil from '@/cordova-util';
 
 @Component({
   components: {
     InfiniteLoading,
-    MemoList,
+    MemoNode,
     SearchConditioner,
   },
 })
@@ -110,8 +113,12 @@ export default class App extends Vue {
   private addRootMemo() {
     this.shownMemos.unshift(MemoBase.create(E_MemoType.Text));
     this.$nextTick(() => {
-      (this.$refs.memoList as MemoList).focusToLatest();
+      ((this.$refs.memos as Vue[])[this.shownMemos.length - 1] as MemoNode).focus();
     });
+  }
+  private removeRootMemo(item: MemoBase) {
+    if (item.id !== undefined) { (this.$store.state.db as DB).delete(item.id); }
+    this.shownMemos.splice(this.shownMemos.indexOf(item), 1);
   }
   private async download() {
       if (!confirm('download?')) { return; }
@@ -145,6 +152,10 @@ export default class App extends Vue {
     flex: 1;
     overflow-y: scroll;
     padding-bottom: 50vh;
+  }
+  &__memo-list{
+    padding: 1px;
+    overflow-x: hidden;  // スワイプ対応
   }
   &__footer{
     display: flex;
