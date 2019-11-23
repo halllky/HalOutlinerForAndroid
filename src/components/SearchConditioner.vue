@@ -11,14 +11,17 @@
     <input type="button" value="検索" @click="launch">
     <input type="button" value="クリア" @click="clear">
     <div class="searcher__option" v-if="showOption">
-      <label class="searcher__label">
-        <input type="checkbox" v-model="onlyTodo">
-        todoのみ
+      <label class="searcher__check">
+        <input class="searcher__check-input" type="checkbox" v-model="onlyTodo">
+        <span class="searcher__label">todoのみ</span>
       </label>
       <label for="date-from">
-        <DateInput id="date-from" v-model="dateFrom" :showYesterdayTommorow="false" />
-        〜
-        <DateInput v-model="dateTo" :showYesterdayTommorow="false" />
+        <div class="searcher__label">作成日</div>
+        <div class="searcher__date-from-to">
+          <DateInput id="date-from" v-model="dateFrom" :showYesterdayTommorow="false" />
+          <span class="searcher__label">〜</span>
+          <DateInput v-model="dateTo" :showYesterdayTommorow="false" />
+        </div>
       </label>
     </div>
   </div>
@@ -47,11 +50,20 @@ export default class SearchConditioner extends Vue {
 
   public launch() {
     this.showOption = false;
+    let from: moment.Moment | null;
+    let to: moment.Moment | null;
+    if (this.dateFrom && this.dateTo) {
+      from = moment.min(this.dateFrom, this.dateTo);
+      to = moment.max(this.dateFrom, this.dateTo);
+    } else {
+      from = this.dateFrom;
+      to = this.dateTo;
+    }
     this.$emit('launch', {
       terms: this.terms,
       onlyTodo: this.onlyTodo,
-      from: this.dateFrom,
-      to: this.dateTo,
+      from: from,
+      to: to,
     });
   }
   public clear() {
@@ -103,9 +115,21 @@ export default class SearchConditioner extends Vue {
     }
   }
   &__label {
+    color: $c_base;
     font-size: 12px;
     white-space: nowrap;
-    color: $c_base;
+    margin: 0 6px;
+  }
+  &__check {
+    display: flex;
+    align-items: center;
+  }
+  &__check-input {
+    margin: 0;
+  }
+  &__date-from-to {
+    display: flex;
+    align-items: center;
   }
 }
 </style>

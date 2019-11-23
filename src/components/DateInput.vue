@@ -49,7 +49,7 @@ export default class DateInput extends Vue {
     padding: 3px 5px;
     border: none;
     border-radius: 18px;
-    filter: drop-shadow(0 0 0.3em rgb(74, 83, 122));
+    // filter: drop-shadow(0 0 0.3em rgb(74, 83, 122));
     /* サイドボタン消去 */
     &::-webkit-clear-button {
       appearance: none;
