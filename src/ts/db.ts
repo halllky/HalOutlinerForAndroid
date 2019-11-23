@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+import moment from 'moment';
 import { MemoBase } from './memo';
 import { E_MemoState } from './const';
 
@@ -33,30 +34,39 @@ export default class DB {
       return id;
     });
   }
-  public async load({
-    limit = 1,
-    offset = 0,
-    filter = {
-      terms: new Array<string>(),
-      onlyTodo: false,
+  public async load(args: {
+    limit?: number,
+    offset?: number,
+    filter?: {
+      terms: string[],
+      onlyTodo: boolean,
+      from: moment.Moment | null,
+      to: moment.Moment | null,
     },
   }): Promise<MemoBase[]> {
     const isMatched = (memo: MemoBase): boolean => {
       const obj = MemoBase.create(memo.type, memo);
       return obj.find((o) => {
+        if (!args.filter) { return true; }
         return (
-          !filter.onlyTodo || o.state === E_MemoState.Todo
+          !args.filter.onlyTodo || o.state === E_MemoState.Todo
         ) && (
-          !filter.terms.length
-          || filter.terms.some((t) => o.value.toLowerCase().indexOf(t.toLowerCase()) >= 0)
+          !args.filter.terms.length
+          || args.filter.terms.some((t) => o.value.toLowerCase().indexOf(t.toLowerCase()) >= 0)
+        ) && (
+          !args.filter.from
+          || o.createdTime >= args.filter.from.toDate()
+        ) && (
+          !args.filter.to
+          || o.createdTime < args.filter.to.add(1, 'days').toDate()
         );
       });
     };
     return this.db.Memos
       .reverse()
       .filter(isMatched)
-      .offset(offset)
-      .limit(limit)
+      .offset(args.offset ? args.offset : 0)
+      .limit(args.limit === undefined ? 1 : args.limit)
       .toArray()
       .then((arr) => {
         return arr.map((m) => MemoBase.create(m.type, m));

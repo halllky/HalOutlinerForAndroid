@@ -1,10 +1,9 @@
 <template>
   <div id="app" class="app">
-    <div class="app__header">
-      <SearchConditioner
-        @launch="search"
-      ></SearchConditioner>
-    </div>
+    <SearchConditioner
+      @launch="search"
+      style="z-index: 2"
+    ></SearchConditioner>
     <div class="app__body">
       <MemoList
         ref="memoList"
@@ -29,6 +28,7 @@
 <script lang="ts">
 import { Component, Watch, Vue } from 'vue-property-decorator';
 import InfiniteLoading from 'vue-infinite-loading';
+import moment from 'moment';
 import MemoList from '@/components/MemoList.vue';
 import SearchConditioner from '@/components/SearchConditioner.vue';
 import { TextMemo, MemoBase } from './ts/memo';
@@ -50,15 +50,21 @@ export default class App extends Vue {
   private isInitialized = false;
   private searchTerms: string[] = [];
   private showOnlyTodo = false;
+  private showFrom: moment.Moment | null = null;
+  private showTo: moment.Moment | null = null;
   private offset: number = 0;
   private chunk = 50;
 
   public search(condition: {
     terms: string[],
     onlyTodo: boolean,
+    from: moment.Moment | null,
+    to: moment.Moment | null,
   }) {
     this.searchTerms = condition.terms;
     this.showOnlyTodo = condition.onlyTodo;
+    this.showFrom = condition.from;
+    this.showTo = condition.to;
     this.reset();
     this.dialogOpened = false;
   }
@@ -70,6 +76,8 @@ export default class App extends Vue {
       filter: {
         terms: this.searchTerms,
         onlyTodo: this.showOnlyTodo,
+        from: this.showFrom,
+        to: this.showTo,
       },
     }).then((memos) => {
       this.shownMemos = memos;
@@ -85,6 +93,8 @@ export default class App extends Vue {
       filter: {
         terms: this.searchTerms,
         onlyTodo: this.showOnlyTodo,
+        from: this.showFrom,
+        to: this.showTo,
       },
     }).then(async (memos) => {
       if (memos.length) {
