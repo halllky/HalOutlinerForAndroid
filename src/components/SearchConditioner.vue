@@ -1,29 +1,39 @@
 <template>
   <div class="searcher">
-    <input type="text"
-      v-model="term"
-      class="searcher__text"
-      spellcheck="false"
-      onfocus="select();"
-      placeholder="検索"
-      @keyup="onKeyup">
-    <input type="button" value="詳細" @click="showOption = !showOption">
-    <input type="button" value="検索" @click="launch">
-    <input type="button" value="クリア" @click="clear">
-    <div class="searcher__option" v-if="showOption">
-      <label class="searcher__check">
-        <input class="searcher__check-input" type="checkbox" v-model="onlyTodo">
-        <span class="searcher__label">todoのみ</span>
-      </label>
-      <label for="date-from">
-        <div class="searcher__label">作成日</div>
-        <div class="searcher__date-from-to">
-          <DateInput id="date-from" v-model="dateFrom" :showYesterdayTommorow="false" />
-          <span class="searcher__label">〜</span>
-          <DateInput v-model="dateTo" :showYesterdayTommorow="false" />
-        </div>
-      </label>
+    <div class="searcher__main">
+      <a class="searcher__tooltip" @click="showOption = !showOption">
+        <span class="icon__three-lines" :class="{ 'icon__three-lines--rotate': showOption }"></span>
+      </a>
+      <input type="text"
+        v-model="term"
+        class="searcher__text"
+        spellcheck="false"
+        onfocus="select();"
+        placeholder="検索"
+        @keyup="onKeyup">
+      <a class="searcher__tooltip" @click="launch" style="width: 44px;">
+        <span class="icon__search"></span>
+      </a>
+      <a class="searcher__tooltip" @click="clear">
+        <span class="icon__clear"></span>
+      </a>
     </div>
+    <transition name="searcher__option--trans">
+      <div class="searcher__option" v-if="showOption">
+        <label class="searcher__check">
+          <input class="searcher__check-input" type="checkbox" v-model="onlyTodo">
+          <span class="searcher__label">todoのみ</span>
+        </label>
+        <label for="date-from">
+          <div class="searcher__label">作成日</div>
+          <div class="searcher__date-from-to">
+            <DateInput id="date-from" v-model="dateFrom" :showYesterdayTommorow="false" />
+            <span class="searcher__label">〜</span>
+            <DateInput v-model="dateTo" :showYesterdayTommorow="false" />
+          </div>
+        </label>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -84,17 +94,24 @@ export default class SearchConditioner extends Vue {
 
 <style lang="scss">
 .searcher {
-  display: flex;
-  justify-content: space-between;
   position: relative;
-  padding: 2px;
-  background: $c_accent;
+  &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px;
+    background: $c_accent;
+    & > * {
+      margin: 0 4px;
+    }
+  }
   &__option {
     display: flex;
     flex-direction: column;
     position: absolute;
     top: 100%;
-    right: 0;
+    left: 0;
+    z-index: -1;
     background: $c_accent;
     & > * {
       padding: 6px;
@@ -102,8 +119,18 @@ export default class SearchConditioner extends Vue {
     & > :not(:first-child) {
       border-top: 1px solid $c_font;
     }
+    &--trans {
+      &-enter-active, &-leave-active {
+        transition: .2s;
+        transform-origin: top;
+      }
+      &-enter, &-leave-to {
+        transform: translateY(-100%);
+      }
+    }
   }
   &__text {
+    flex: 1;
     font-size: 20px;
     padding: 7px;
     border: none;
@@ -113,6 +140,13 @@ export default class SearchConditioner extends Vue {
     &::placeholder {
       color: rgba($c_font_weak, .5);
     }
+  }
+  &__tooltip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    align-self: stretch;
   }
   &__label {
     color: $c_base;
@@ -130,6 +164,82 @@ export default class SearchConditioner extends Vue {
   &__date-from-to {
     display: flex;
     align-items: center;
+  }
+}
+// 横三本線アイコン
+.icon__three-lines {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 2px;
+  margin: 11px 0;
+  background-color: $c_base;
+  transition: .3s;
+  &--rotate {
+    transform: scaleY(1.5);
+  }
+  &::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: -8px;
+    width: 24px;
+    height: 2px;
+    background-color: $c_base;
+  }
+  &::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 8px;
+    width: 24px;
+    height: 2px;
+    background-color: $c_base;
+  }
+}
+// 虫眼鏡アイコン
+.icon__search {
+  display: inline-block;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border: 2px solid $c_base;
+  border-radius: 50%;
+  &::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    bottom: -3px;
+    right: -3px;
+    transform: rotate(45deg);
+    background-color: $c_base;
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+}
+// ばってんアイコン
+.icon__clear {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 2px;
+  transform: rotate(45deg);
+  background-color: $c_base;
+  &::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    transform: rotate(90deg);
+    background-color: $c_base;
+  }
+  &:active {
+    transform: rotate(45deg) translateX(1px) translateY(1px);
   }
 }
 </style>
